@@ -1,25 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import JoinScreen from './components/JoinScreen';
+import React from 'react';
+import { AuthProvider, useAuth } from './components/AuthContext';
+import Login from './components/Login';
 import ChatRoom from './components/ChatRoom';
 
+function MainApp() {
+  const { currentUser } = useAuth();
+
+  // Show Login screen if not authenticated, otherwise show ChatRoom
+  return !currentUser ? <Login /> : <ChatRoom />;
+}
+
 export default function App() {
-  // Load username from localStorage on initial render
-  const [username, setUsername] = useState(() => {
-    return localStorage.getItem('chat_username') || '';
-  });
-
-  // Save username to localStorage using useEffect whenever it changes
-  useEffect(() => {
-    if (username) {
-      localStorage.setItem('chat_username', username);
-    } else {
-      localStorage.removeItem('chat_username');
-    }
-  }, [username]);
-
-  return !username ? (
-    <JoinScreen onJoin={(name) => setUsername(name)} />
-  ) : (
-    <ChatRoom username={username} onLeave={() => setUsername('')} />
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

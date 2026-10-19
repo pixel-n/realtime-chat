@@ -1,4 +1,3 @@
-// Sign in and sign up component
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 
@@ -24,7 +23,7 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-screen bg-gray-950 p-4 font-sans">
       <div className="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-md">
         <h1 className="text-2xl font-bold text-white mb-2">{isSignup ? 'Create Account' : 'Welcome Back'}</h1>
-        <p className="text-gray-400 text-sm mb-6">Enter your credentials to access live chats</p>
+        <p className="text-gray-400 text-sm mb-6">Enter your email and password to access live chats</p>
 
         {error && <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl">{error}</div>}
 

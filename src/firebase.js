@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
-// Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCsf27DzwTi8zdaNmc-MJVwq8wAByh6KcM",
   authDomain: "realtime-chat-12122.firebaseapp.com",
@@ -13,6 +13,7 @@ const firebaseConfig = {
   measurementId: "G-6XQFTQKJ1N"
 };
 
-// Initialize Firebase and Database
+// Initialize Firebase services
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 export const db = getDatabase(app);

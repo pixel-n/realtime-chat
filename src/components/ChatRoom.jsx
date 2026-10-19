@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
 import { ref, push, onValue } from 'firebase/database';
+import { useAuth } from './AuthContext';
 
-export default function ChatRoom({ username, onLeave }) {
+export default function ChatRoom() {
+  const { currentUser, logout } = useAuth();
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef(null);
@@ -12,7 +14,7 @@ export default function ChatRoom({ username, onLeave }) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Real-time listener for database updates via useEffect
+  // Real-time listener for chat messages
   useEffect(() => {
     const chatRef = ref(db, 'global_messages');
     const unsubscribe = onValue(chatRef, (snapshot) => {
@@ -31,22 +33,26 @@ export default function ChatRoom({ username, onLeave }) {
     e.preventDefault();
     if (!inputText.trim()) return;
 
+    const senderName = currentUser?.email || currentUser?.uid || 'Anonymous';
+
     push(ref(db, 'global_messages'), {
-      sender: username,
+      sender: senderName,
       text: inputText.trim(),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
     setInputText('');
   };
 
+  const userDisplay = currentUser?.email || currentUser?.uid || 'User';
+
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100 font-sans">
       <header className="h-16 border-b border-gray-800 px-6 flex items-center justify-between bg-gray-900">
         <h3 className="font-semibold text-sm">Live Chat Room</h3>
         <div className="flex items-center gap-4">
-          <span className="text-xs text-gray-400">User: <strong className="text-indigo-400">{username}</strong></span>
-          <button onClick={onLeave} className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg text-xs font-semibold transition">
-            Leave Room
+          <span className="text-xs text-gray-400">User: <strong className="text-indigo-400">{userDisplay}</strong></span>
+          <button onClick={logout} className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg text-xs font-semibold transition">
+            Sign Out
           </button>
         </div>
       </header>
@@ -54,7 +60,7 @@ export default function ChatRoom({ username, onLeave }) {
       {/* Messages Feed */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((msg) => {
-          const isMe = msg.sender === username;
+          const isMe = msg.sender === userDisplay;
           return (
             <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
               <span className="text-[10px] text-gray-500 mb-1">{msg.sender} • {msg.timestamp}</span>
